@@ -1,0 +1,54 @@
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect, render, get_object_or_404
+from .models import Property, Room
+from .forms import RoomForm
+from tenants.models import Tenant
+from payments.models import Payment
+from payments.forms import InquiryForm
+
+# --- PUBLIC VIEWS ---
+def public_home(request):
+    properties = Property.objects.all()
+    return render(request, 'properties/public_home.html', {'properties': properties})
+
+def public_room_list(request, property_id):
+    property = get_object_or_404(Property, id=property_id)
+    rooms = Room.objects.filter(property=property, is_occupied=False)
+    form = InquiryForm()
+    context = {'property': property, 'rooms': rooms, 'form': form}
+    return render(request, 'properties/public_room_list.html', context)
+
+# --- ADMIN CRUD VIEWS ---
+@login_required
+def room_list(request):
+    rooms = Room.objects.all()
+    return render(request, 'properties/room_list.html', {'rooms': rooms})
+
+@login_required
+def room_detail(request, id):
+    room = get_object_or_404(Room, id=id)
+    current_tenant = Tenant.objects.filter(room=room).first()
+    payments = Payment.objects.filter(tenant__room=room).select_related('tenant')
+    context = {'room': room, 'current_tenant': current_tenant, 'payments': payments}
+    return render(request, 'properties/room_detail.html', context)
+
+def add_room(request):
+    form = RoomForm(request.POST or None, request.FILES or None)
+    if form.is_valid():
+        form.save()
+        return redirect('room_list')
+    return render(request, 'properties/room_form.html', {'form': form})
+
+def edit_room(request, id):
+    room = Room.objects.get(id=id)
+    form = RoomForm(request.POST or None, request.FILES or None, instance=room)
+    if form.is_valid():
+        form.save()
+        return redirect('room_list')
+    return render(request, 'properties/room_form.html', {'form': form})
+
+@login_required
+def delete_room(request, id):
+    room = Room.objects.get(id=id)
+    room.delete()
+    return redirect('room_list')

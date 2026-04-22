@@ -1,0 +1,16 @@
+# Python garbage
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual Environment (DO NOT UPLOAD THIS)
+venv/
+env/
+
+# Django Database & Uploaded Photos (DO NOT UPLOAD THESE)
+db.sqlite3
+media/
+
+# VS Code / PyCharm settings
+.vscode/
+.idea/

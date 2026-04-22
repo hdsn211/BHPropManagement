@@ -1,0 +1,134 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+
+<div class="container-fluid py-4">
+    
+    <!-- PAGE HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold text-dark mb-0">Payment History</h4>
+        <a href="{% url 'add_payment' %}" class="btn btn-primary btn-sm shadow-sm">
+            <i class="fas fa-plus me-1"></i> Record Payment
+        </a>
+    </div>
+
+    <!-- SEARCH & FILTER CARD -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <form method="GET" action="" class="row g-3 align-items-end">
+                <div class="col-md-5">
+                    <label class="form-label small text-muted fw-semibold">Search Tenant Name</label>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
+                        <input type="text" name="q" class="form-control border-start-0" placeholder="Enter name..." value="{{ q }}">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small text-muted fw-semibold">Filter by Status</label>
+                    <select name="status" class="form-select form-select-sm">
+                        <option value="">All Statuses</option>
+                        {% for value, label in status_choices %}
+                            <option value="{{ value }}" {% if status_filter == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3 text-end">
+                    <a href="{% url 'payment_list' %}" class="btn btn-outline-secondary btn-sm">Clear</a>
+                    <button type="submit" class="btn btn-dark btn-sm shadow-sm">Apply Filter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- PAYMENTS TABLE -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Tenant</th>
+                        <th>Room</th>
+                        <th>Amount</th>
+                        <th>Due Date</th>
+                        <th>Paid Date</th>
+                        <th>Status</th>
+                        <th class="pe-4 text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for payment in payments %}
+                    <tr>
+                        <td class="ps-4 fw-semibold">{{ payment.tenant.name }}</td>
+                        <td class="text-muted">{{ payment.tenant.room.name|default:"Unassigned" }}</td>
+                        <td class="fw-semibold">₱{{ payment.amount }}</td>
+                        <td class="text-muted">{{ payment.due_date|date:"M d, Y" }}</td>
+                        <td class="text-muted">
+                            {% if payment.paid_date %}
+                                {{ payment.paid_date|date:"M d, Y" }}
+                            {% else %}
+                                <span class="text-danger">---</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if payment.status == 'PAID' %}
+                                <span class="badge bg-success-subtle text-success">Paid</span>
+                            {% elif payment.status == 'PAID_LATE' %}
+                                <span class="badge bg-warning-subtle text-warning">Paid Late</span>
+                            {% elif payment.status == 'OVERDUE' %}
+                                <span class="badge bg-danger-subtle text-danger">Overdue</span>
+                            {% else %}
+                                <span class="badge bg-secondary-subtle text-secondary">Pending</span>
+                            {% endif %}
+                        </td>
+                        <td class="pe-4 text-center">
+                            <a href="{% url 'edit_payment' payment.id %}" class="btn btn-sm btn-outline-primary me-1" title="Edit">
+                                <i class="fas fa-pen-to-square"></i>
+                            </a>
+                            <a href="{% url 'delete_payment' payment.id %}" class="btn btn-sm btn-outline-danger" title="Delete" onclick="return confirm('Delete this payment record?')">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-5">
+                            <i class="fas fa-receipt fa-2x mb-2 d-block opacity-50"></i>
+                            No payments match your filter.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% if page_obj.has_other_pages %}
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center mb-0">
+                {% if page_obj.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ q }}&status={{ status_filter }}">Previous</a></li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                {% endif %}
+                
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                    {% else %}
+                        <li class="page-item"><a class="page-link" href="?page={{ num }}&q={{ q }}&status={{ status_filter }}">{{ num }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ q }}&status={{ status_filter }}">Next</a></li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">Next</span></li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

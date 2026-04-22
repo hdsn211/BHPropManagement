@@ -1,0 +1,150 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1 small">
+                    <li class="breadcrumb-item"><a href="{% url 'room_list' %}" class="text-muted text-decoration-none">Rooms</a></li>
+                    <li class="breadcrumb-item active text-dark">{{ room.name }}</li>
+                </ol>
+            </nav>
+            <h4 class="fw-bold text-dark mb-0">Room Profile</h4>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'edit_room' room.id %}" class="btn btn-outline-dark btn-sm shadow-sm">
+                <i class="fas fa-pen-to-square me-1"></i> Edit Room
+            </a>
+            <a href="{% url 'delete_room' room.id %}" class="btn btn-outline-danger btn-sm" onclick="return confirm('Delete this room entirely?')">
+                <i class="fas fa-trash me-1"></i> Delete
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        
+        <!-- LEFT COLUMN: Room Info & Tenant -->
+        <div class="col-lg-5">
+            
+            <!-- ROOM INFO CARD -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body text-center p-4">
+                    {% if room.image %}
+                        <img src="{{ room.image.url }}" class="rounded shadow-sm mb-3" alt="{{ room.name }}" style="width: 100%; max-height: 250px; object-fit: cover;">
+                    {% else %}
+                        <div class="mb-3">
+                            <i class="fas fa-door-open fa-3x text-primary opacity-75"></i>
+                        </div>
+                    {% endif %}
+                    
+                    <h3 class="fw-bold text-dark mb-1">{{ room.name }}</h3>
+                    <h4 class="text-primary fw-bold mb-3">₱{{ room.rent_amount }} <small class="text-muted fw-normal" style="font-size: 0.8rem;">/ month</small></h4>
+                    
+                    {% if room.is_occupied %}
+                        <span class="badge bg-success-subtle text-success fs-6 px-3 py-2"><i class="fas fa-check-circle me-1"></i>Occupied</span>
+                    {% else %}
+                        <span class="badge bg-primary-subtle text-primary fs-6 px-3 py-2"><i class="fas fa-clock me-1"></i>Vacant</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- CURRENT TENANT CARD -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 pt-3 pb-0">
+                    <h6 class="fw-bold text-muted mb-0">Current Tenant</h6>
+                </div>
+                <div class="card-body">
+                    {% if current_tenant %}
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="rounded-circle bg-dark text-white d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-0">{{ current_tenant.name }}</h6>
+                                <small class="text-muted">{{ current_tenant.contact }}</small>
+                            </div>
+                        </div>
+                        <ul class="list-group list-group-flush border-top">
+                            <li class="list-group-item px-0 d-flex justify-content-between">
+                                <span class="text-muted small">Move-in Date</span>
+                                <span class="fw-semibold small">{{ current_tenant.start_date|date:"M d, Y" }}</span>
+                            </li>
+                            <li class="list-group-item px-0 d-flex justify-content-between">
+                                <span class="text-muted small">Status</span>
+                                <span class="badge bg-success-subtle text-success">Active</span>
+                            </li>
+                        </ul>
+                        <a href="{% url 'edit_tenant' current_tenant.id %}" class="btn btn-sm btn-outline-dark w-100 mt-3">View Tenant Profile</a>
+                    {% else %}
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-user-slash fa-2x mb-2 opacity-25"></i>
+                            <p class="mb-3 small">No tenant assigned to this room.</p>
+                            <a href="{% url 'add_tenant' %}" class="btn btn-sm btn-primary">Assign Tenant</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN: Payment History -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center pt-3 pb-0">
+                    <h6 class="fw-bold text-muted mb-0">Payment History</h6>
+                    {% if current_tenant %}
+                        <a href="{% url 'add_payment' %}" class="btn btn-sm btn-outline-primary">Record Payment</a>
+                    {% endif %}
+                </div>
+                <div class="card-body p-0">
+                    {% if payments %}
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Month</th>
+                                <th>Amount</th>
+                                <th>Due Date</th>
+                                <th>Paid Date</th>
+                                <th class="pe-4 text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for payment in payments %}
+                            <tr>
+                                <td class="ps-4 fw-semibold small">{{ payment.due_date|date:"M Y" }}</td>
+                                <td class="small">₱{{ payment.amount }}</td>
+                                <td class="text-muted small">{{ payment.due_date|date:"M d" }}</td>
+                                <td class="text-muted small">
+                                    {% if payment.paid_date %}{{ payment.paid_date|date:"M d" }}{% else %}---{% endif %}
+                                </td>
+                                <td class="pe-4 text-center">
+                                    {% if payment.status == 'PAID' %}
+                                        <span class="badge bg-success-subtle text-success">Paid</span>
+                                    {% elif payment.status == 'PAID_LATE' %}
+                                        <span class="badge bg-warning-subtle text-warning">Late</span>
+                                    {% elif payment.status == 'OVERDUE' %}
+                                        <span class="badge bg-danger-subtle text-danger">Overdue</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary-subtle text-secondary">Pending</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                        <div class="text-center text-muted py-5">
+                            <i class="fas fa-receipt fa-2x mb-2 opacity-25"></i>
+                            <p class="small mb-0">{% if current_tenant %}No payments recorded for this tenant yet.{% else %}Assign a tenant to view their payment history.{% endif %}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

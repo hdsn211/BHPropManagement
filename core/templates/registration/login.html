@@ -1,0 +1,42 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+
+<div class="container-fluid py-5 d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="card border-0 shadow-sm" style="width: 100%; max-width: 400px;">
+        <div class="card-body p-5">
+            
+            <div class="text-center mb-4">
+                <i class="fas fa-building fa-2x text-primary mb-2"></i>
+                <h4 class="fw-bold text-dark">Manager Login</h4>
+                <small class="text-muted">Access the property dashboard</small>
+            </div>
+
+            <form method="POST">
+                {% csrf_token %}
+                
+                <!-- Shows error if wrong password is entered -->
+                {% if form.errors %}
+                <div class="alert alert-danger py-2 small">
+                    <i class="fas fa-exclamation-circle me-1"></i>Invalid username or password.
+                </div>
+                {% endif %}
+
+                <div class="mb-3">
+                    <label class="form-label text-muted fw-semibold small">Username</label>
+                    <input type="text" name="username" class="form-control" required autofocus>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label text-muted fw-semibold small">Password</label>
+                    <input type="password" name="password" class="form-control" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary w-100 shadow-sm">
+                    <i class="fas fa-sign-in-alt me-1"></i> Login
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

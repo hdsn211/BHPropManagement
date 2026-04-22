@@ -1,0 +1,231 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+
+<!-- ALERT MESSAGES -->
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm border-0 py-2 mt-3" role="alert">
+            <i class="fas fa-check-circle me-2"></i>{{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="container-fluid py-4">
+    
+    <!-- PAGE HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold text-dark mb-0">Dashboard Overview</h4>
+        <div class="d-flex gap-2">
+            <form method="POST" action="{% url 'generate_dues' %}" class="m-0">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success btn-sm shadow-sm">
+                    <i class="fas fa-magic me-1"></i> Generate Dues
+                </button>
+            </form>
+            <a href="{% url 'add_room' %}" class="btn btn-primary btn-sm shadow-sm">
+                <i class="fas fa-door-open me-1"></i> Add Room
+            </a>
+            <a href="{% url 'add_tenant' %}" class="btn btn-outline-dark btn-sm shadow-sm">
+                <i class="fas fa-user-plus me-1"></i> Add Tenant
+            </a>
+        </div>
+    </div>
+
+    <!-- SUMMARY CARDS -->
+    <div class="row g-3 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="glass-card glass-card-hover p-3" style="border-left: 5px solid #0d6efd;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1 small text-uppercase fw-semibold">Total Rooms</p>
+                        <h2 class="fw-bold mb-0">{{ total_rooms }}</h2>
+                    </div>
+                    <div class="fs-1" style="color: #0d6efd; opacity: 0.2;"><i class="fas fa-door-open"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="glass-card glass-card-hover p-3" style="border-left: 5px solid #198754;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1 small text-uppercase fw-semibold">Total Tenants</p>
+                        <h2 class="fw-bold mb-0">{{ total_tenants }}</h2>
+                    </div>
+                    <div class="fs-1" style="color: #198754; opacity: 0.2;"><i class="fas fa-users"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="glass-card glass-card-hover p-3" style="border-left: 5px solid #343a40;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1 small text-uppercase fw-semibold">Total Income</p>
+                        <h2 class="fw-bold mb-0">₱{{ total_income }}</h2>
+                    </div>
+                    <div class="fs-1" style="color: #343a40; opacity: 0.2;"><i class="fas fa-money-bill-wave"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="glass-card glass-card-hover p-3" style="border-left: 5px solid #dc3545;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1 small text-uppercase fw-semibold">Overdue</p>
+                        <h2 class="fw-bold mb-0 text-danger">{{ overdue_count }}</h2>
+                    </div>
+                    <div class="fs-1" style="color: #dc3545; opacity: 0.2;"><i class="fas fa-exclamation-triangle"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CHART & ACTION REQUIRED ROW -->
+    <div class="row g-4 mb-4">
+        <!-- CHART -->
+        <div class="col-lg-8">
+            <div class="glass-card h-100">
+                <div class="card-header bg-transparent border-0 pt-3 pb-0">
+                    <h6 class="fw-bold text-dark mb-0">Monthly Income</h6>
+                </div>
+                <div class="card-body">
+                    <div style="height: 300px; position: relative;">
+                        {% if chart_data != "[]" %}
+                            <canvas id="incomeChart"></canvas>
+                        {% else %}
+                            <div class="d-flex flex-column align-items-center justify-content-center h-100 text-muted">
+                                <i class="fas fa-chart-bar fa-3x mb-3 opacity-25"></i>
+                                <p class="mb-0 small">No income data recorded yet.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACTION REQUIRED -->
+        <div class="col-lg-4">
+            <div class="glass-card h-100" style="border-left: 4px solid #dc3545 !important;">
+                <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center pt-3 pb-0">
+                    <h6 class="fw-bold text-danger mb-0"><i class="fas fa-exclamation-triangle me-1"></i> Action Required</h6>
+                    <span class="badge bg-danger rounded-pill">{{ overdue_count|add:pending_count }}</span>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        {% for due in upcoming_dues %}
+                        <li class="list-group-item bg-transparent px-4 py-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <p class="fw-semibold mb-0 small">{{ due.tenant.name }}</p>
+                                    <p class="text-muted mb-0" style="font-size: 0.8rem;">{{ due.tenant.room.name|default:"Unassigned" }} • Due: {{ due.due_date|date:"M d" }}</p>
+                                </div>
+                                <div class="text-end">
+                                    <span class="fw-bold small">₱{{ due.amount }}</span>
+                                    {% if due.status == 'OVERDUE' %}
+                                        <div class="text-danger" style="font-size: 0.75rem;">OVERDUE</div>
+                                    {% else %}
+                                        <div class="text-warning" style="font-size: 0.75rem;">PENDING</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </li>
+                        {% empty %}
+                        <li class="list-group-item bg-transparent text-center text-muted py-5">
+                            <i class="fas fa-check-circle fa-2x text-success mb-2 d-block opacity-50"></i>
+                            All payments settled!
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RECENT PAYMENTS  -->
+    <div class="row">
+        <div class="col-12">
+            <div class="solid-card">
+                <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center pt-3 pb-0">
+                    <h6 class="fw-bold text-muted mb-0">Recent Payments</h6>
+                    <a href="{% url 'payment_list' %}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Tenant</th>
+                                <th>Room</th>
+                                <th>Amount</th>
+                                <th>Due Date</th>
+                                <th>Status</th>
+                                <th class="pe-4 text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for payment in recent_payments %}
+                            <tr>
+                                <td class="ps-4 fw-semibold">{{ payment.tenant.name }}</td>
+                                <td class="text-muted">{{ payment.tenant.room.name|default:"Unassigned" }}</td>
+                                <td>₱{{ payment.amount }}</td>
+                                <td class="text-muted">{{ payment.due_date|date:"M d, Y" }}</td>
+                                <td>
+                                    {% if payment.status == 'PAID' %}<span class="badge bg-success-subtle text-success">Paid</span>
+                                    {% elif payment.status == 'PAID_LATE' %}<span class="badge bg-warning-subtle text-warning">Paid Late</span>
+                                    {% else %}<span class="badge bg-secondary-subtle text-secondary">Pending</span>{% endif %}
+                                </td>
+                                <td class="pe-4 text-center">
+                                    <a href="{% url 'edit_payment' payment.id %}" class="btn btn-sm btn-outline-secondary"><i class="fas fa-eye"></i></a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="6" class="text-center text-muted py-4">No payments recorded yet.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Chart JS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const ctx = document.getElementById('incomeChart');
+        if (!ctx) return;
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: JSON.parse('{{ chart_labels|escapejs }}'),
+                datasets: [{
+                    label: 'Income (₱)',
+                    data: JSON.parse('{{ chart_data|escapejs }}'),
+                    backgroundColor: 'rgba(13, 110, 253, 0.8)',
+                    borderColor: 'rgba(13, 110, 253, 1)',
+                    borderWidth: 1,
+                    borderRadius: 6,
+                    barPercentage: 0.5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false, 
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(0,0,0,0.05)' },
+                        ticks: { callback: function(value) { return '₱' + value; } }
+                    },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    });
+</script>
+
+{% endblock %}

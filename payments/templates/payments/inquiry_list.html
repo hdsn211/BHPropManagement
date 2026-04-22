@@ -1,0 +1,39 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <h4 class="fw-bold text-dark mb-4">Tenant Inquiries</h4>
+
+    <div class="card solid-card">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Date</th>
+                        <th>Tenant Name</th>
+                        <th>Contact</th>
+                        <th>Property / Room</th>
+                        <th>Message</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for inquiry in inquiries %}
+                    <tr>
+                        <td class="ps-4 text-muted small">{{ inquiry.created_at|date:"M d, Y" }}</td>
+                        <td class="fw-semibold">{{ inquiry.name }}</td>
+                        <td>{{ inquiry.contact_number }}</td>
+                        <td>
+                            <span class="text-muted small">{{ inquiry.property.name }} - </span>
+                            <span class="fw-semibold">{{ inquiry.room.name }}</span>
+                        </td>
+                        <td class="text-muted small" style="max-width: 250px;">{{ inquiry.message|truncatewords:10 }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="5" class="text-center text-muted py-5">No inquiries yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
