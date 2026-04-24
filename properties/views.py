@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render, get_object_or_404
+from django.core.paginator import Paginator
 from .models import Property, Room
 from .forms import RoomForm
 from tenants.models import Tenant
@@ -18,11 +19,17 @@ def public_room_list(request, property_id):
     context = {'property': property, 'rooms': rooms, 'form': form}
     return render(request, 'properties/public_room_list.html', context)
 
-# --- ADMIN CRUD VIEWS ---
 @login_required
 def room_list(request):
-    rooms = Room.objects.select_related('property').all()
-    return render(request, 'properties/room_list.html', {'rooms': rooms})
+    rooms = Room.objects.select_related('property').all().order_by('name')
+    # Paginate (Show 10 rooms per page)
+    paginator = Paginator(rooms, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    context = {
+        'page_obj': page_obj,
+    }
+    return render(request, 'properties/room_list.html', context)
 
 @login_required
 def room_detail(request, id):

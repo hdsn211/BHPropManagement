@@ -24,10 +24,9 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for room in rooms %}
+                    <!-- CHANGED 'rooms' TO 'page_obj' HERE -->
+                    {% for room in page_obj %}
                     <tr>
-                        
-                        <!-- PROPERTY COLUMN  -->
                         <td class="ps-4">
                             <span class="badge bg-primary bg-opacity-25 text-primary mb-1" style="font-size: 0.75rem;">
                                 {{ room.property.get_property_type_display|default:"Unassigned" }}
@@ -35,11 +34,11 @@
                             <p class="text-white mb-0" style="font-size: 0.85rem;">{{ room.property.name|default:"No Property" }}</p>
                         </td>
                         
-                        <!-- ROOM NAME WITH IMAGE -->
                         <td>
                             <div class="d-flex align-items-center">
                                 {% if room.image %}
-                                    <img src="{{ room.image.url }}" class="rounded me-3" alt="{{ room.name }}" style="width: 45px; height: 45px; object-fit: cover; border: 1px solid #334155;">
+                                    <!-- loading="lazy" stops the browser from downloading images until you scroll to them -->
+                                    <img src="{{ room.image.url }}" loading="lazy" class="rounded me-3" alt="{{ room.name }}" style="width: 45px; height: 45px; object-fit: cover; border: 1px solid #334155;">
                                 {% else %}
                                     <div class="rounded bg-secondary bg-opacity-25 me-3 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
                                         <i class="fas fa-door-open text-muted"></i>
@@ -49,10 +48,8 @@
                             </div>
                         </td>
                         
-                        <!-- AMOUNT -->
                         <td class="text-white fw-semibold">₱{{ room.rent_amount }}</td>
                         
-                        <!-- STATUS  -->
                         <td>
                             {% if room.is_occupied %}
                                 <span class="badge bg-success px-3 py-2 rounded-pill">Occupied</span>
@@ -61,7 +58,6 @@
                             {% endif %}
                         </td>
                         
-                        <!-- ACTIONS -->
                         <td class="pe-4 text-center">
                             <a href="{% url 'room_detail' room.id %}" class="btn btn-sm btn-outline-info me-1" title="View">
                                 <i class="fas fa-eye"></i>
@@ -86,6 +82,33 @@
             </table>
         </div>
     </div>
+
+    <!-- ADDED PAGINATION BUTTONS HERE -->
+    <nav class="mt-4 d-flex justify-content-center">
+        <ul class="pagination pagination-sm mb-0">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link bg-dark text-white border-secondary" href="?page=1">&laquo; First</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link bg-dark text-white border-secondary" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                </li>
+            {% endif %}
+
+            <li class="page-item active">
+                <span class="page-link bg-primary border-primary text-white">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            </li>
+
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link bg-dark text-white border-secondary" href="?page={{ page_obj.next_page_number }}">Next</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link bg-dark text-white border-secondary" href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
 
 </div>
 
