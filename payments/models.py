@@ -33,7 +33,7 @@ class Payment(models.Model):
         return f"{self.tenant.name} - {self.status}"
 
 class Inquiry(models.Model):
-    # Add these choices right under the class declaration
+
     STATUS_CHOICES = [
         ('PENDING', 'Pending'),
         ('RESOLVED', 'Resolved'),
@@ -47,7 +47,6 @@ class Inquiry(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
     
-    # ADD THIS NEW LINE:
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
 
     def __str__(self):

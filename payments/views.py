@@ -81,7 +81,6 @@ def delete_payment(request, id):
 
 @login_required
 def inquiry_list(request):
-    # FIXED: Added .filter(status='PENDING') so resolved inquiries disappear!
     inquiries = Inquiry.objects.select_related('room', 'property').filter(status='PENDING').order_by('-created_at')
     inquiries.update(is_read=True)
     return render(request, 'payments/inquiry_list.html', {'inquiries': inquiries})
@@ -117,10 +116,10 @@ def generate_dues(request):
 class MaintenanceListView(LoginRequiredMixin, ListView):
     model = MaintenanceTicket
     template_name = 'payments/maintenance_list.html' 
-    context_object_name = 'tickets'  # <--- ADD THIS LINE HERE
+    context_object_name = 'tickets'
     
     def get_queryset(self):
-        # This hides anything that is RESOLVED
+        # Hide anything that is RESOLVED
         return MaintenanceTicket.objects.exclude(status='RESOLVED').order_by('-created_at')
 
 @login_required

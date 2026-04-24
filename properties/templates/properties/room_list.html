@@ -27,7 +27,7 @@
                     {% for room in rooms %}
                     <tr>
                         
-                        <!-- PROPERTY COLUMN (Changed text-black to text-white) -->
+                        <!-- PROPERTY COLUMN  -->
                         <td class="ps-4">
                             <span class="badge bg-primary bg-opacity-25 text-primary mb-1" style="font-size: 0.75rem;">
                                 {{ room.property.get_property_type_display|default:"Unassigned" }}
@@ -35,7 +35,7 @@
                             <p class="text-white mb-0" style="font-size: 0.85rem;">{{ room.property.name|default:"No Property" }}</p>
                         </td>
                         
-                        <!-- ROOM NAME WITH IMAGE (Changed text-black to text-white) -->
+                        <!-- ROOM NAME WITH IMAGE -->
                         <td>
                             <div class="d-flex align-items-center">
                                 {% if room.image %}
@@ -49,10 +49,10 @@
                             </div>
                         </td>
                         
-                        <!-- AMOUNT (Changed text-black to text-white) -->
+                        <!-- AMOUNT -->
                         <td class="text-white fw-semibold">₱{{ room.rent_amount }}</td>
                         
-                        <!-- STATUS (Made them solid colors instead of transparent) -->
+                        <!-- STATUS  -->
                         <td>
                             {% if room.is_occupied %}
                                 <span class="badge bg-success px-3 py-2 rounded-pill">Occupied</span>

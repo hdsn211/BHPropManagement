@@ -10,14 +10,12 @@ import json
 @login_required
 def dashboard(request):
     # SECURITY CHECK 
-    # 1. Always let superusers (main owner) in!
+    # Superuser can only enter admin page
     if not request.user.is_superuser:
-        # 2. If not a superuser, strictly check if they are an OWNER
+        # If not a superuser check if they are an OWNER
         if not hasattr(request.user, 'profile') or request.user.profile.role != 'OWNER':
             return redirect('/tenant-portal/') 
     
-    
-    # ... keep the rest of your dashboard code below ...
     # New Property Stats
     total_properties = Property.objects.count()
     total_rooms = Room.objects.count()

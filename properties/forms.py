@@ -9,7 +9,6 @@ class RoomForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'rent_amount': forms.NumberInput(attrs={'class': 'form-control'}),
             'property': forms.Select(attrs={'class': 'form-select'}),
-            # Remove the form-control class here! Let the browser do its job.
             'image': forms.FileInput(attrs={'accept': 'image/*'}), 
         }
 
