@@ -21,7 +21,8 @@ def public_room_list(request, property_id):
 # --- ADMIN CRUD VIEWS ---
 @login_required
 def room_list(request):
-    rooms = Room.objects.all()
+    # Add select_related('property') so it doesn't lag!
+    rooms = Room.objects.select_related('property').all()
     return render(request, 'properties/room_list.html', {'rooms': rooms})
 
 @login_required
@@ -45,6 +46,9 @@ def edit_room(request, id):
     if form.is_valid():
         form.save()
         return redirect('room_list')
+    return render(request, 'properties/room_form.html', {'form': form})
+    
+    # MISSING PIECE!
     return render(request, 'properties/room_form.html', {'form': form})
 
 @login_required

@@ -12,6 +12,6 @@ urlpatterns = [
     path('payments/delete/<int:id>/', views.delete_payment, name='delete_payment'),
     path('inquiries/', views.inquiry_list, name='inquiry_list'),
     path('generate-dues/', views.generate_dues, name='generate_dues'),
-    path('maintenance/', views.maintenance_list, name='maintenance_list'),
+    path('maintenance/', views.MaintenanceListView.as_view(), name='maintenance_list'),
     path('maintenance/update/<int:id>/', views.update_maintenance_status, name='update_maintenance_status'),
 ]

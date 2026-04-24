@@ -4,18 +4,13 @@ from .models import Payment, Inquiry, MaintenanceTicket
 class PaymentForm(forms.ModelForm):
     class Meta:
         model = Payment
-        fields = ['tenant', 'amount', 'due_date', 'paid_date', 'status']
+        fields = ['tenant', 'amount', 'due_date', 'paid_date', 'status'] # 'tenant' is back!
         widgets = {
-            'amount': forms.NumberInput(attrs={'class': 'form-control'}),
+            'amount': forms.NumberInput(attrs={'class': 'form-control'}),   
             'due_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'paid_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'status': forms.Select(attrs={'class': 'form-select'}),
         }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['tenant'].widget = forms.Select(attrs={'class': 'form-select'})
-
 
 class InquiryForm(forms.ModelForm):
     class Meta:

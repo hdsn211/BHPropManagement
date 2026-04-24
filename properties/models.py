@@ -1,5 +1,5 @@
 from django.db import models
-
+from PIL import Image
 class Property(models.Model):
     PROPERTY_TYPES = [
         ('BOARDING_HOUSE', 'Boarding House'),
@@ -21,6 +21,16 @@ class Room(models.Model):
     rent_amount = models.DecimalField(max_digits=10, decimal_places=2)
     is_occupied = models.BooleanField(default=False)
     image = models.ImageField(upload_to='room_photos/', blank=True, null=True)
+
+    # ADD THIS AUTO-RESIZE FUNCTION:
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.image:
+            img = Image.open(self.image.path)
+            if img.width > 400 or img.height > 400:
+                output_size = (400, 400)
+                img.thumbnail(output_size)
+                img.save(self.image.path)
 
     def __str__(self):
         if self.property:

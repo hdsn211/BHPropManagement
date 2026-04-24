@@ -1,20 +1,20 @@
-from .models import Payment, Inquiry, MaintenanceTicket
-from django.shortcuts import redirect, render, get_object_or_404
-from .forms import PaymentForm, InquiryForm, MaintenanceForm
-from django.shortcuts import redirect, render
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
+from django.views.generic import ListView
+from django.shortcuts import redirect, render, get_object_or_404
 from django.core.paginator import Paginator
 from django.contrib import messages
 from django.db.models import Sum
 from django.db.models.functions import TruncMonth
 from django.utils import timezone
-from tenants.models import Tenant
-from .models import Payment, Inquiry
-from .forms import PaymentForm, InquiryForm
-from properties.models import Property, Room
-import calendar
 from datetime import date
+import calendar
 import json
+
+from .models import Payment, Inquiry, MaintenanceTicket
+from .forms import PaymentForm, InquiryForm
+from tenants.models import Tenant
+from properties.models import Property, Room
 
 
 # --- PUBLIC VIEW ---
@@ -32,6 +32,7 @@ def submit_inquiry(request):
             messages.success(request, "Your inquiry has been sent successfully!")
             return redirect('public_room_list', property_id=property_id)
     return redirect('public_home')
+
 
 # --- ADMIN CRUD VIEWS ---
 @login_required
@@ -55,6 +56,7 @@ def payment_list(request):
     }
     return render(request, 'payments/payment_list.html', context)
 
+@login_required
 def add_payment(request):
     form = PaymentForm(request.POST or None)
     if form.is_valid():
@@ -62,6 +64,7 @@ def add_payment(request):
         return redirect('payment_list')
     return render(request, 'payments/payment_form.html', {'form': form})
 
+@login_required
 def edit_payment(request, id):
     payment = Payment.objects.get(id=id)
     form = PaymentForm(request.POST or None, instance=payment)
@@ -78,7 +81,8 @@ def delete_payment(request, id):
 
 @login_required
 def inquiry_list(request):
-    inquiries = Inquiry.objects.select_related('room', 'property').order_by('-created_at')
+    # FIXED: Added .filter(status='PENDING') so resolved inquiries disappear!
+    inquiries = Inquiry.objects.select_related('room', 'property').filter(status='PENDING').order_by('-created_at')
     inquiries.update(is_read=True)
     return render(request, 'payments/inquiry_list.html', {'inquiries': inquiries})
 
@@ -108,10 +112,16 @@ def generate_dues(request):
             messages.warning(request, f'No new payments generated.')
     return redirect('dashboard')
 
-@login_required
-def maintenance_list(request):
-    tickets = MaintenanceTicket.objects.select_related('tenant', 'room').order_by('-created_at')
-    return render(request, 'payments/maintenance_list.html', {'tickets': tickets})
+
+# --- CLASS-BASED VIEW FOR MAINTENANCE ---
+class MaintenanceListView(LoginRequiredMixin, ListView):
+    model = MaintenanceTicket
+    template_name = 'payments/maintenance_list.html' 
+    context_object_name = 'tickets'  # <--- ADD THIS LINE HERE
+    
+    def get_queryset(self):
+        # This hides anything that is RESOLVED
+        return MaintenanceTicket.objects.exclude(status='RESOLVED').order_by('-created_at')
 
 @login_required
 def update_maintenance_status(request, id):

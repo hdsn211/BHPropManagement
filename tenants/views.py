@@ -35,10 +35,16 @@ def tenant_portal(request):
     try:
         profile = request.user.profile
     except Profile.DoesNotExist:
-        return redirect('/dashboard/')
+        # STOP THE LOOP! Don't redirect to dashboard. Just pass None.
+        profile = None
     
-    payments = Payment.objects.filter(tenant__room=profile.room).order_by('-due_date') if profile.room else None
-    context = {'profile': profile, 'payments': payments}
+    # Safely check for payments so it doesn't crash if profile is None
+    payments = Payment.objects.filter(tenant__room=profile.room).order_by('-due_date') if profile and profile.room else None
+    
+    context = {
+        'profile': profile,
+        'payments': payments,
+    }
     return render(request, 'tenants/tenant_portal.html', context)
 
 # --- ADMIN CRUD VIEWS ---
@@ -70,7 +76,7 @@ def tenant_list(request):
 def add_tenant(request):
     form = TenantForm(request.POST or None)
     if form.is_valid():
-        tenant = form.save()
+        tenant = form.save() # Clean save!
         update_room_occupancy(tenant.room)
         return redirect('tenant_list')
     return render(request, 'tenants/tenant_form.html', {'form': form})
@@ -80,7 +86,7 @@ def edit_tenant(request, id):
     old_room = tenant.room
     form = TenantForm(request.POST or None, instance=tenant)
     if form.is_valid():
-        tenant = form.save()
+        tenant = form.save() # Clean save!
         update_room_occupancy(old_room)
         update_room_occupancy(tenant.room)
         return redirect('tenant_list')

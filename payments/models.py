@@ -33,6 +33,12 @@ class Payment(models.Model):
         return f"{self.tenant.name} - {self.status}"
 
 class Inquiry(models.Model):
+    # Add these choices right under the class declaration
+    STATUS_CHOICES = [
+        ('PENDING', 'Pending'),
+        ('RESOLVED', 'Resolved'),
+    ]
+
     property = models.ForeignKey('properties.Property', on_delete=models.CASCADE, null=True, blank=True)
     room = models.ForeignKey('properties.Room', on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=100)
@@ -40,6 +46,9 @@ class Inquiry(models.Model):
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
+    
+    # ADD THIS NEW LINE:
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
 
     def __str__(self):
         return f"Inquiry from {self.name}"

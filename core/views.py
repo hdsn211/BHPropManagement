@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.db.models import Sum, Count
 from django.db.models.functions import TruncMonth
 from properties.models import Room, Property
@@ -9,6 +9,15 @@ import json
 
 @login_required
 def dashboard(request):
+    # SECURITY CHECK 
+    # 1. Always let superusers (main owner) in!
+    if not request.user.is_superuser:
+        # 2. If not a superuser, strictly check if they are an OWNER
+        if not hasattr(request.user, 'profile') or request.user.profile.role != 'OWNER':
+            return redirect('/tenant-portal/') 
+    
+    
+    # ... keep the rest of your dashboard code below ...
     # New Property Stats
     total_properties = Property.objects.count()
     total_rooms = Room.objects.count()

@@ -12,13 +12,25 @@
 
         <div class="card-body px-5 py-4">
             <form method="POST" enctype="multipart/form-data">
+                {% if form.non_field_errors %}
+                    <div class="alert error">
+                        {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}       
                 {% csrf_token %}
                 {% for field in form %}
                     <div class="mb-3">
                         <label for="{{ field.id_for_label }}" class="form-label text-muted fw-semibold small">
                             {{ field.label }}
                         </label>
+                        {% if field.name == 'rent_amount' %}
+                        <div class="input-group">
+                            <span class="input-group-text fw-semibold">₱</span>
+                            {{ field }}
+                        </div>
+                        {% else %}
                         {{ field }}
+                        {% endif %}
                         
                         <!-- Displays form errors -->
                         {% if field.errors %}

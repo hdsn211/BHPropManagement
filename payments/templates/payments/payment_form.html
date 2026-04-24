@@ -19,7 +19,14 @@
                         <label for="{{ field.id_for_label }}" class="form-label text-muted fw-semibold small">
                             {{ field.label }}
                         </label>
+                        {% if field.name == 'amount' %}
+                        <div class="input-group">
+                            <span class="input-group-text fw-semibold">₱</span>
+                            {{ field }}
+                        </div>
+                        {% else %}
                         {{ field }}
+                        {% endif %}
                         
                         <!-- Displays form errors -->
                         {% if field.errors %}
