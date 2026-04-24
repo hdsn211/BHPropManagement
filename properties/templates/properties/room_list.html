@@ -24,7 +24,6 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- CHANGED 'rooms' TO 'page_obj' HERE -->
                     {% for room in page_obj %}
                     <tr>
                         <td class="ps-4">
@@ -37,7 +36,6 @@
                         <td>
                             <div class="d-flex align-items-center">
                                 {% if room.image %}
-                                    <!-- loading="lazy" stops the browser from downloading images until you scroll to them -->
                                     <img src="{{ room.image.url }}" loading="lazy" class="rounded me-3" alt="{{ room.name }}" style="width: 45px; height: 45px; object-fit: cover; border: 1px solid #334155;">
                                 {% else %}
                                     <div class="rounded bg-secondary bg-opacity-25 me-3 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
