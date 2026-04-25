@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+{% load static %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,7 +16,33 @@
             flex-direction: column;
             min-height: 100vh;
         }
-        .hero-section { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: white; padding: 6rem 0; }
+        
+        .hero-section { 
+            background-image: url("{% static 'images/bg.jpg' %}"); 
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: white; 
+            padding: 8rem 0; 
+            position: relative; 
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(11, 17, 32, 0.85), rgba(30, 41, 59, 0.75));
+            z-index: 1;
+        }
+        
+        .hero-section .container {
+            position: relative;
+            z-index: 2;
+        }
+
         .property-card { 
             border-radius: 16px; overflow: hidden; border: none; 
             box-shadow: 0 4px 20px rgba(0,0,0,0.06); transition: transform 0.3s ease;
