@@ -69,7 +69,6 @@
         }
         .form-control::placeholder { color: #64748b !important; }
 
-        /* --- MASTER TABLE FIX (Kills Pale Rows) --- */
         .table { 
             --bs-table-bg: #1e293b !important; --bs-table-border-color: #334155 !important; 
             --bs-table-hover-bg: #334155 !important; --bs-table-hover-color: #ffffff !important; 
@@ -81,11 +80,9 @@
         .table thead th { color: #94a3b8 !important; font-weight: 600; }
         .table-hover > tbody > tr:hover > * { background-color: #334155 !important; color: #ffffff !important; }
 
-        /* --- MASTER LIST FIX (Recent Payments) --- */
         .list-group-item { background-color: #1e293b !important; border-color: #334155 !important; color: #e2e8f0 !important; }
         .list-group-item:hover { background-color: #334155 !important; }
 
-        /* --- MASTER BADGE FIX (Solid Vibrant Colors) --- */
         .badge { font-weight: 600 !important; padding: 0.45em 0.85em !important; color: #ffffff !important; }
         .badge.bg-success, .badge.bg-success-subtle { background-color: #22c55e !important; color: #ffffff !important; }
         .badge.bg-danger, .badge.bg-danger-subtle { background-color: #ef4444 !important; color: #ffffff !important; }
@@ -100,7 +97,7 @@
 </head>
 <body>
 
-    <!-- THE BULLETPROOF GRID LAYOUT -->
+    <!-- BULLETPROOF GRID LAYOUT -->
     <div class="container-fluid p-0 m-0">
         <div class="row g-0 m-0">
             
@@ -166,8 +163,6 @@
 
             <!-- RIGHT: MAIN CONTENT AREA -->
             <div class="col-12 col-lg-10 main-content p-3 p-lg-4 d-flex flex-column">
-                
-                <!-- MOBILE MENU (Keep your existing mobile menu here) -->
                 <div class="d-lg-none shadow-sm rounded p-3 mb-4 d-flex justify-content-between align-items-center" style="background-color: #1e293b; border: 1px solid #334155;">
                     <a class="text-white fw-bold text-decoration-none" href="{% url 'dashboard' %}">
                         <i class="fas fa-building me-2 text-primary"></i>PropManager
@@ -191,8 +186,6 @@
                         </ul>
                     </div>
                 </div>
- 
-                <!-- PUSHES THE CONTENT UP AND FOOTER DOWN -->
                 <div class="flex-grow-1">
                     {% block content %}
                     
