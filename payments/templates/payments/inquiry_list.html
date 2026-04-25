@@ -2,34 +2,42 @@
 
 {% block content %}
 <div class="container-fluid py-4">
-    <h4 class="fw-bold text-dark mb-4">Tenant Inquiries</h4>
+    <h4 class="fw-bold text-white mb-4">Tenant Inquiries</h4>
 
     <div class="card solid-card">
         <div class="card-body p-0">
             <table class="table table-hover mb-0 align-middle">
-                <thead class="table-light">
+                <thead>
                     <tr>
-                        <th class="ps-4">Date</th>
-                        <th>Tenant Name</th>
-                        <th>Contact</th>
-                        <th>Property / Room</th>
-                        <th>Message</th>
+                        <th class="ps-4 text-white small">Date</th>
+                        <th class="text-white small">Tenant Name</th>
+                        <th class="text-white small">Contact</th>
+                        <th class="text-white small">Property / Room</th>
+                        <th class="text-white small">Message</th>
+                        <th class="pe-4 text-center text-white small">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for inquiry in inquiries %}
                     <tr>
                         <td class="ps-4 text-muted small">{{ inquiry.created_at|date:"M d, Y" }}</td>
-                        <td class="fw-semibold">{{ inquiry.name }}</td>
-                        <td>{{ inquiry.contact_number }}</td>
+                        <td class="fw-semibold text-white">{{ inquiry.name }}</td>
+                        <td class="text-white">{{ inquiry.contact_number }}</td>
                         <td>
-                            <span class="text-muted small">{{ inquiry.property.name }} - </span>
-                            <span class="fw-semibold">{{ inquiry.room.name }}</span>
+                            <span class="text-muted small">{{ inquiry.property.name|default:"N/A" }} - </span>
+                            <span class="fw-semibold text-white">{{ inquiry.room.name }}</span>
                         </td>
                         <td class="text-muted small" style="max-width: 250px;">{{ inquiry.message|truncatewords:10 }}</td>
+                        
+                        <!-- Mark as Read Button -->
+                        <td class="pe-4 text-center">
+                            <a href="{% url 'mark_inquiry_read' inquiry.id %}" class="btn btn-sm btn-outline-info" title="Mark as Read & Dismiss">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </td>
                     </tr>
                     {% empty %}
-                    <tr><td colspan="5" class="text-center text-muted py-5">No inquiries yet.</td></tr>
+                    <tr><td colspan="6" class="text-center text-muted py-5">No inquiries yet.</td></tr>
                     {% endfor %}
                 </tbody>
             </table>

@@ -86,6 +86,14 @@ def inquiry_list(request):
     return render(request, 'payments/inquiry_list.html', {'inquiries': inquiries})
 
 @login_required
+def mark_inquiry_read(request, id):
+    inquiry = get_object_or_404(Inquiry, id=id)
+    inquiry.status = 'READ'
+    inquiry.save()
+    messages.success(request, "Inquiry marked as read.")
+    return redirect('inquiry_list')
+
+@login_required
 def generate_dues(request):
     if request.method == 'POST':
         today = timezone.now().date()

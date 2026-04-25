@@ -33,7 +33,13 @@
         .sidebar-link.active { background-color: #3b82f6; color: #FFFFFF !important; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4); }
 
         /* --- MAIN CONTENT AREA --- */
-        .main-content { min-height: 100vh; background-color: #0f172a; padding: 1.5rem !important; }
+        .main-content { 
+            display: flex;
+        flex-direction: column;
+        min-height: 100vh; 
+        background-color: #0f172a; 
+        padding: 1.5rem !important; 
+        }
         
         /* Force light text & kill stray white backgrounds */
         .main-content .bg-white, .main-content .bg-light, .main-content .text-bg-light, .main-content .card.bg-white {
@@ -86,6 +92,10 @@
         .badge.bg-secondary, .badge.bg-secondary-subtle { background-color: #64748b !important; color: #ffffff !important; }
         .badge.bg-warning, .badge.bg-warning-subtle { background-color: #eab308 !important; color: #000000 !important; }
         .badge.bg-primary, .badge.bg-primary-subtle { background-color: #3b82f6 !important; color: #ffffff !important; }
+
+        footer {
+            margin-top: auto !important;
+        }
     </style>
 </head>
 <body>
@@ -155,11 +165,12 @@
             </div>
 
             <!-- RIGHT: MAIN CONTENT AREA -->
-            <div class="col-12 col-lg-10 main-content p-3 p-lg-4">
-                <!-- Mobile Menu -->
+            <div class="col-12 col-lg-10 main-content p-3 p-lg-4 d-flex flex-column">
+                
+                <!-- MOBILE MENU (Keep your existing mobile menu here) -->
                 <div class="d-lg-none shadow-sm rounded p-3 mb-4 d-flex justify-content-between align-items-center" style="background-color: #1e293b; border: 1px solid #334155;">
                     <a class="text-white fw-bold text-decoration-none" href="{% url 'dashboard' %}">
-                        <i class="fas fa-building me-2 text-primary"></i>PropertyManager
+                        <i class="fas fa-building me-2 text-primary"></i>PropManager
                     </a>
                     <div class="dropdown">
                         <button class="btn btn-dark btn-sm" type="button" data-bs-toggle="dropdown">
@@ -181,28 +192,28 @@
                     </div>
                 </div>
  
-                {% block content %}
-                
-                {% endblock %}
+                <!-- PUSHES THE CONTENT UP AND FOOTER DOWN -->
+                <div class="flex-grow-1">
+                    {% block content %}
+                    
+                    {% endblock %}
+                </div>
+
                 <!-- --- FOOTER --- -->
-                <footer class="mt-5 pt-4 border-top" style="border-color: #334155 !important;">
+                <footer class="mt-4 pt-4 border-top" style="border-color: #334155 !important;">
                     <div class="row align-items-center">
                         <div class="col-md-6">
                             <p class="text-muted mb-0" style="font-size: 0.85rem;">
-                                &copy; 2026 BHManager. All rights reserved.
+                                &copy; 2026 PropertyManager. All rights reserved.
                             </p>
                         </div>
                         <div class="col-md-6 text-md-end">
                             <span class="text-muted" style="font-size: 0.85rem;">
-                                Princess Rafaela Genobiagon, Carlo Cobrado, Ann Khenna Binangnan, Hudson Davie Gacer
+                                Princess Rafaela, Ann Khenna, Carlo, Hudson Davie
                             </span>
                         </div>
                     </div>
                 </footer>
-
-            </div>
-        </div>
-    </div>
             </div>
         </div>
     </div>

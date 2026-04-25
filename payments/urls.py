@@ -14,4 +14,5 @@ urlpatterns = [
     path('generate-dues/', views.generate_dues, name='generate_dues'),
     path('maintenance/', views.MaintenanceListView.as_view(), name='maintenance_list'),
     path('maintenance/update/<int:id>/', views.update_maintenance_status, name='update_maintenance_status'),
+    path('inquiry/<int:id>/read/', views.mark_inquiry_read, name='mark_inquiry_read'),
 ]

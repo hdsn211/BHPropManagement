@@ -36,6 +36,7 @@ class Inquiry(models.Model):
 
     STATUS_CHOICES = [
         ('PENDING', 'Pending'),
+        ('READ', 'Read'),
         ('RESOLVED', 'Resolved'),
     ]
 
