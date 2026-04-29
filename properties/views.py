@@ -39,6 +39,7 @@ def room_detail(request, id):
     context = {'room': room, 'current_tenant': current_tenant, 'payments': payments}
     return render(request, 'properties/room_detail.html', context)
 
+@login_required
 def add_room(request):
     form = RoomForm(request.POST or None, request.FILES or None)
     if form.is_valid():
@@ -46,6 +47,7 @@ def add_room(request):
         return redirect('room_list')
     return render(request, 'properties/room_form.html', {'form': form})
 
+@login_required
 def edit_room(request, id):
     room = Room.objects.get(id=id)
     form = RoomForm(request.POST or None, request.FILES or None, instance=room)

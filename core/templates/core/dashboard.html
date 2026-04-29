@@ -8,7 +8,11 @@
     <div>
         <h4 class="fw-bold text-white mb-0">Dashboard Overview</h4>
         <p class="text-muted mb-0 mt-1" style="font-size: 0.9rem; letter-spacing: 1px;">
-            {% now "D, d M Y" as current_date %}{{ current_date|upper }}
+            {% load tz %}
+                {% timezone "Asia/Manila" %}
+                    {% now "D, d M Y" as current_date %}
+                    {{ current_date|upper }}
+            {% endtimezone %}
         </p>
     </div>
 </div>

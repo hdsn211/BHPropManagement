@@ -10,7 +10,6 @@ from django.utils import timezone
 from datetime import date
 import calendar
 import json
-
 from .models import Payment, Inquiry, MaintenanceTicket
 from .forms import PaymentForm, InquiryForm
 from tenants.models import Tenant
