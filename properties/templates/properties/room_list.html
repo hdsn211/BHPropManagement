@@ -1,5 +1,5 @@
 {% extends 'core/base.html' %}
-
+{% load custom_filters %}
 {% block content %}
 
 <div class="container-fluid py-4">
@@ -46,7 +46,7 @@
                             </div>
                         </td>
                         
-                        <td class="text-white fw-semibold">₱{{ room.rent_amount }}</td>
+                        <td class="text-white fw-semibold">₱{{ room.rent_amount|format_money }}</td>
                         
                         <td>
                             {% if room.is_occupied %}

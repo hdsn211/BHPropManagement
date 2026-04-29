@@ -1,5 +1,5 @@
 {% extends 'core/base.html' %}
-
+{% load custom_filters %}
 {% block content %}
 
 <div class="container-fluid py-4">
@@ -62,7 +62,7 @@
                     <tr>
                         <td class="ps-4 fw-semibold">{{ payment.tenant.name }}</td>
                         <td class="text-muted">{{ payment.tenant.room.name|default:"Unassigned" }}</td>
-                        <td class="fw-semibold">₱{{ payment.amount }}</td>
+                        <td class="fw-semibold">₱{{ payment.amount|format_money }}</td>
                         <td class="text-muted">{{ payment.due_date|date:"M d, Y" }}</td>
                         <td class="text-muted">
                             {% if payment.paid_date %}

@@ -1,3 +1,4 @@
+{% load custom_filters %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,8 +9,16 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
-        .portal-card { border-radius: 16px; border: none; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f8fafc; 
+        }
+        .portal-card { 
+            border-radius: 16px; 
+            border: none; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06); 
+        }
+
     </style>
 </head>
 <body>
@@ -66,7 +75,7 @@
                             </div>
                         </div>
                         {% if profile.room %}
-                        <h4 class="text-success fw-bold mb-0">₱{{ profile.room.rent_amount }}<small class="text-muted fw-normal" style="font-size: 0.8rem;">/mo</small></h4>
+                        <h4 class="text-success fw-bold mb-0">₱{{ profile.room.rent_amount|format_money }}<small class="text-muted fw-normal" style="font-size: 0.8rem;">/mo</small></h4>
                         {% endif %}
                     </div>
                 </div>
@@ -95,7 +104,7 @@
                                 {% for payment in payments %}
                                 <tr>
                                     <td class="ps-4 fw-semibold small">{{ payment.due_date|date:"F Y" }}</td>
-                                    <td class="small">₱{{ payment.amount }}</td>
+                                    <td class="small">₱{{ payment.amount|format_money }}</td>
                                     <td class="text-muted small">{{ payment.due_date|date:"M d, Y" }}</td>
                                     <td class="pe-4 text-center">
                                         {% if payment.status == 'PAID' %}

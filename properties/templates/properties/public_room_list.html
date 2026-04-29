@@ -1,3 +1,4 @@
+{% load custom_filters %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -20,9 +21,22 @@
             border-radius: 16px; overflow: hidden; border: none; 
             box-shadow: 0 4px 20px rgba(0,0,0,0.06); transition: transform 0.3s ease;
         }
-        .room-card:hover { transform: translateY(-6px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        .room-img { height: 200px; object-fit: cover; width: 100%; background-color: #e2e8f0; }
-        .price-tag { color: #059669; font-weight: 700; }
+        .room-card:hover { 
+            transform: translateY(-6px); 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
+        }
+        .room-img { 
+            height: 200px; 
+            object-fit: cover; 
+            width: 100%; 
+            background-color: #e2e8f0; 
+        }
+
+        .price-tag { 
+            color: #059669; 
+            font-weight: 700; 
+        }
+
     </style>
 </head>
 <body>
@@ -87,7 +101,7 @@
                         
                         <div class="card-body p-4">
                             <h5 class="fw-bold text-dark mb-2">{{ room.name }}</h5>
-                            <p class="price-tag fs-5 mb-3">₱{{ room.rent_amount }} <small class="text-muted fw-normal" style="font-size: 0.8rem;">/ month</small></p>
+                            <p class="price-tag fs-5 mb-3">₱{{ room.rent_amount|format_money }}<small class="text-muted fw-normal" style="font-size: 0.8rem;">/ month</small></p>
                             <button type="button" class="btn btn-outline-dark w-100 fw-semibold" data-bs-toggle="modal" data-bs-target="#inquiryModal{{ room.id }}">
                                 <i class="fas fa-envelope me-1"></i> Inquire Now
                             </button>
